@@ -8,7 +8,8 @@ import { prepareData } from "../utils/tableutils";
 import { NearEarthObject, NearEarthObjectsData } from "../types/neotypes";
 
 export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
-  const preparedData = prepareData(data);
+  // Memoize the prepareData function call
+  const preparedData = useMemo(() => prepareData(data), [data]);
 
   const columnHelper = createColumnHelper<NearEarthObject>();
 
