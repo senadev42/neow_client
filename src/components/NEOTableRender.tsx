@@ -2,10 +2,12 @@ import {
   useReactTable,
   createColumnHelper,
   flexRender,
-  getCoreRowModel
+  getCoreRowModel,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import { prepareData } from "../utils/tableutils";
 import { NearEarthObject, NearEarthObjectsData } from "../types/neotypes";
+import { useMemo } from "react";
 
 export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
   // Memoize the prepareData function call
@@ -71,7 +73,8 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
   const table = useReactTable({
     data: preparedData,
     columns,
-    getCoreRowModel: getCoreRowModel()
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(), // Enable pagination
   });
 
   return (
@@ -98,7 +101,7 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-6 py-3 whitespace-nowrap">
+                <td key={cell.id} className="px-6 py-2 whitespace-nowrap w-36">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -106,7 +109,79 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
           ))}
         </tbody>
       </table>
+      {/*  pagination controls */}
+      <div className="flex justify-around p-4">
+
+          {/* Jump to controls */}
+          <div className="flex items-center gap-x-4">
+          <span className="flex items-center gap-1">
+            <div>Page</div>
+            <strong>
+              {table.getState().pagination.pageIndex + 1} of{" "}
+              {table.getPageCount()}
+            </strong>
+          </span>
+          <span className="flex items-center gap-1">
+            Go to page:
+            <input
+              type="number"
+              defaultValue={table.getState().pagination.pageIndex + 1}
+              onChange={(e) => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                table.setPageIndex(page);
+              }}
+              className="border p-1 rounded w-16"
+            />
+          </span>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => {
+              table.setPageSize(Number(e.target.value));
+            }}
+          >
+            {[5, 10, 20].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        
+        {/* button controls */}
+        <div className="space-x-2">
+          <button
+            onClick={() => table.firstPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-3 rounded-md"
+          >
+            {"<<"}
+          </button>
+          <button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-3 rounded-md"
+          >
+            {"<"}
+          </button>
+          <button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-3 rounded-md"
+          >
+            {">"}
+          </button>
+          <button
+            onClick={() => table.lastPage()}
+            disabled={!table.getCanNextPage()}
+            className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-3 rounded-md"
+          >
+            {">>"}
+          </button>
+        </div>
+
       
+      </div>
     </div>
   );
 };

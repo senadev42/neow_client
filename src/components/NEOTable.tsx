@@ -34,7 +34,7 @@ const NEOTable = () => {
   else if (error) return <Status statusText={`Error: ${error.message}`} />;
   else
     return (
-      <div className="flex flex-col items-center gap-y-4 mt-8">
+      <div className="flex flex-col items-center gap-y-4 mt-4">
         {/* Date Picker */}
         <p>Today is: {new Date().toLocaleDateString()} </p>
         <div className="flex space-x-4">
