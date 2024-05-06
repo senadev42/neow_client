@@ -11,10 +11,10 @@ const NEOTable = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["neos", startDate, endDate],
     queryFn: () => fetchNearEarthObjects(startDate, endDate),
-    staleTime: 1 * 60 * 1000
-  });  
+    staleTime: 1 * 60 * 1000,
+  });
 
-  useEffect(() => { 
+  useEffect(() => {
     if (data) {
       console.log("Near earth objects:");
       console.log(data.near_earth_objects);
@@ -37,7 +37,7 @@ const NEOTable = () => {
       <div className="flex flex-col items-center gap-y-4 mt-4">
         {/* Date Picker */}
         <p>Today is: {new Date().toLocaleDateString()} </p>
-        <div className="flex space-x-4">
+        <div className="flex md:space-x-4 flex-col gap-y-2 md:flex-row">
           <input
             type="date"
             value={startDate}

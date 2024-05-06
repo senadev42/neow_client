@@ -9,6 +9,7 @@ export interface CloseApproachData {
 }
 
 export interface NearEarthObject {
+  id: string;
   name: string;
   is_potentially_hazardous_asteroid: boolean;
   estimated_diameter: {

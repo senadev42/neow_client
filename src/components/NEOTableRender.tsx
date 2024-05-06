@@ -50,10 +50,10 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
       (row: NearEarthObject) =>
         Math.round(
           parseFloat(row.close_approach_data[0].miss_distance.kilometers)
-        ) + " km",
+        ).toLocaleString() + " km",
       {
         id: "missDistance",
-        header: "Miss Distance (Kilometers)",
+        header: "Miss Distance",
       }
     ),
     columnHelper.accessor(
@@ -62,12 +62,31 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
           parseFloat(
             row.close_approach_data[0].relative_velocity.kilometers_per_hour
           )
-        ) + " km/hr",
+        ).toLocaleString() + " km/hr",
       {
         id: "velocity",
-        header: "Velocity (Kilometers/Hour)",
+        header: "Velocity",
       }
     ),
+
+    columnHelper.accessor((row: NearEarthObject) => row.id, {
+      id: "note",
+      header: "Note",
+      cell: (cell) => {
+        const { row } = cell;
+        const note = localStorage.getItem(`note_${row.original.id}`);
+        return (
+          <input
+            type="text"
+            defaultValue={note || ""}
+            className="w-full"
+            onChange={(e) => {
+              localStorage.setItem(`note_${row.original.id}`, e.target.value);
+            }}
+          />
+        );
+      },
+    }),
   ];
 
   const table = useReactTable({
@@ -79,14 +98,16 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
 
   return (
     <div>
-      <table className="min-w-full divide-y divide-gray-200">
+      {/* the table itself */}
+      <div >
+      <table className="md:min-w-full divide-y divide-gray-200 md:px-16">
         <thead className="bg-gray-50">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-2 md:px-6 py-3 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -101,7 +122,10 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-6 py-2 whitespace-nowrap w-36">
+                <td
+                  key={cell.id}
+                  className="px-2 md:px-6 md:py-2 md:whitespace-nowrap text-right text-xs md:text-sm"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -109,11 +133,12 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
           ))}
         </tbody>
       </table>
+      </div>
+      
       {/*  pagination controls */}
-      <div className="flex justify-around p-4">
-
-          {/* Jump to controls */}
-          <div className="flex items-center gap-x-4">
+      <div className="flex justify-around p-4 text-sm mt-5">
+        {/* Jump to controls */}
+        <div className="flex items-center gap-x-4">
           <span className="flex items-center gap-1">
             <div>Page</div>
             <strong>
@@ -147,7 +172,6 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
           </select>
         </div>
 
-        
         {/* button controls */}
         <div className="space-x-2">
           <button
@@ -179,8 +203,6 @@ export const NEOTableRender = ({ data }: { data: NearEarthObjectsData }) => {
             {">>"}
           </button>
         </div>
-
-      
       </div>
     </div>
   );
