@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNearEarthObjects } from "../services/neoservices";
 import Status from "./Status";
@@ -6,8 +6,12 @@ import { NEOTableRender } from "./NEOTableRender";
 import NEOVelocityChart from "./NEOVelocityChart";
 
 const NEOTable = () => {
-  const [startDate, setStartDate] = useState("2024-05-04");
-  const [endDate, setEndDate] = useState("2024-05-06");
+  const today = new Date().toISOString().split("T")[0];
+
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
+
+  const [activeTab, setActiveTab] = useState("table");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["neos", startDate, endDate],
@@ -26,9 +30,6 @@ const NEOTable = () => {
 
   //handle today
   const handleTodayClick = () => {
-    const today = new Date().toISOString().split("T")[0];
-
-    // Set state
     setStartDate(today);
     setEndDate(today);
   };
@@ -37,7 +38,7 @@ const NEOTable = () => {
   else if (error) return <Status statusText={`Error: ${error.message}`} />;
   else
     return (
-      <div className="flex flex-col items-center mt-4 text-sm ">
+      <div className="flex flex-col items-center mt-4 text-sm">
         <div className="flex flex-col gap-y-4 items-center">
           {/* Date Picker */}
           <p>Today is: {new Date().toLocaleDateString()} </p>
@@ -64,19 +65,42 @@ const NEOTable = () => {
           </div>
         </div>
 
-        {/* the table */}
-        {data && data.near_earth_objects && (
-          <div className="mt-6">
-            <NEOTableRender data={data.near_earth_objects} />
+        <hr className="border-t-2 border-gray-200 mb-2"></hr>
+        
+        <div>
+          {/* Tab buttons */}
+          <div className="flex justify-center mt-6">
+            <button
+              className={`px-4 py-2 mr-2 ${
+                activeTab === "table" ? "bg-teal-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setActiveTab("table")}
+            >
+              Table
+            </button>
+            <button
+              className={`px-4 py-2 ${
+                activeTab === "chart" ? "bg-teal-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setActiveTab("chart")}
+            >
+              Chart
+            </button>
           </div>
-        )}
 
-        {/* the chart */}
-        {data && data.near_earth_objects && (
-          <div className="pt-5 mt-10 border-t-2 ">
-            <NEOVelocityChart data={data.near_earth_objects} />
-          </div>
-        )}
+          {/* Content */}
+          {activeTab === "table" && (
+            <div className="mt-6">
+              <NEOTableRender data={data.near_earth_objects} />
+            </div>
+          )}
+
+          {activeTab === "chart" && (
+            <div className="pt-5 mt-10 ">
+              <NEOVelocityChart data={data.near_earth_objects} />
+            </div>
+          )}
+        </div>
       </div>
     );
 };
