@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNearEarthObjects } from "../services/neoservices";
 import Status from "./Status";
+import { NEOTableRender } from "./NEOTableRender";
 
 const NEOTable = () => {
   const [startDate, setStartDate] = useState("2024-05-04");
@@ -58,7 +59,11 @@ const NEOTable = () => {
           </button>
         </div>
 
-        {/* the table itself, use tanstack tables maybe*/}
+        {data && data.near_earth_objects && (
+          <div className="mt-4">
+            <NEOTableRender data={data.near_earth_objects} />
+          </div>
+        )}
       </div>
     );
 };
