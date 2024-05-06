@@ -14,7 +14,7 @@ Web app built with react to visualize Near Earth Objects using data providied fr
 2. Go to the project directory
 
 ```bash
-  cd my-project
+  cd neow_client
 ```
 
 3. Install dependencies
