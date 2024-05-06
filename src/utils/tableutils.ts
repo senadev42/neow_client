@@ -20,3 +20,29 @@ export const prepareData = (data: NearEarthObjectsData): NearEarthObject[] => {
     return dateB.getTime() - dateA.getTime();
   });
 };
+
+/**
+ * 
+ * @param data Accepts near earth object data
+ * @returns returns data plottable onto a chart, x and y values
+ */
+export const transformData = (
+  data: NearEarthObjectsData
+): { x: string; y: number }[] => {
+  const transformedData: { x: string; y: number }[] = [];
+
+  Object.values(data).forEach((objects) => {
+    objects.forEach((object) => {
+      const velocity = Math.round(
+        parseFloat(
+          object.close_approach_data[0].relative_velocity.kilometers_per_hour
+        )
+      );
+      transformedData.push({
+        x: object.name,
+        y: velocity,
+      });
+    });
+  });
+  return transformedData;
+};
